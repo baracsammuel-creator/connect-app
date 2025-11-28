@@ -35,7 +35,7 @@ export async function GET(req) {
 
             return {
                 uid: user.uid,
-                email: user.email || (user.isAnonymous ? 'Anonim' : 'Fără Email'),
+                nume: user.displayName || 'Anonim',
                 isAnonymous: user.isAnonymous,
                 creationTime: user.metadata.creationTime,
                 role: role,

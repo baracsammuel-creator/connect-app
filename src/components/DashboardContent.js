@@ -149,8 +149,7 @@ export default function DashboardContent() {
                                 <thead className="bg-gray-100">
                                     <tr>
                                         {/* Coloanele sunt optimizate pentru vizibilitate pe mobil */}
-                                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-[100px]">UID</th>
-                                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider hidden sm:table-cell">Email</th>
+                                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-[100px]">Nume</th>
                                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-[100px]">Rol</th>
                                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-[150px]">Acțiuni</th>
                                     </tr>
@@ -161,14 +160,9 @@ export default function DashboardContent() {
                                             
                                             {/* UID - Afișează scurt pe mobil, complet pe desktop */}
                                             <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                <span className="sm:hidden">{getShortUid(u.uid)}</span>
-                                                <span className="hidden sm:inline">{u.uid}</span>
+                                                <span className="sm:hidden">{getShortUid(u.nume)}</span>
+                                                <span className="hidden sm:inline">{u.nume}</span>
                                                 {u.isAnonymous && <span className="text-xs text-gray-500 ml-1">(Anonim)</span>}
-                                            </td>
-
-                                            {/* Email - Ascuns pe mobil */}
-                                            <td className="px-3 sm:px-6 py-3 hidden sm:table-cell text-sm text-gray-500">
-                                                {u.email}
                                             </td>
 
                                             {/* Rol Curent - Teme actualizate: Roșu, Indigo, Albastru */}

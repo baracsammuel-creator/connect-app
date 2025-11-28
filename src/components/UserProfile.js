@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 // Variabile Globale/Mediu: Citim variabilele folosind pattern-ul standard process.env.NEXT_PUBLIC_...
@@ -204,7 +204,9 @@ export default function UserProfile() {
             }
 
             await setDoc(profileRef, profile, { merge: true });
-            
+            await updateProfile(user, {
+                displayName: profile.name,
+            });
             setStatus("Profil salvat cu succes!"); // Mesaj important păstrat
             // Facem mesajul de succes să dispară după 3 secunde
             setTimeout(() => setStatus(''), 3000);
