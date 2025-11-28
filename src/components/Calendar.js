@@ -565,7 +565,7 @@ export default function Calendar() {
 
                     {!user && (
                         <p className="mt-4 text-center text-sm text-gray-500">
-                            Vă rugăm să vă autentificați (Login Test) pentru a putea vizualiza/crea/edita evenimente.
+                            Vă rugăm să vă autentificați pentru a putea vizualiza/crea/edita evenimente.
                         </p>
                     )}
                     {user && !isAuthorizedToCreate && (

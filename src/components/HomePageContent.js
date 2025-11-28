@@ -82,16 +82,6 @@ export default function HomePageContent() {
                     </Link>
                 )}
                 
-                {/* Buton secundar (pentru autentificare, dacă nu e logat) */}
-                {!user && (
-                    <Link 
-                        href="/test"
-                        className="w-full sm:w-auto inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition duration-200 shadow-md"
-                    >
-                        Login Test
-                    </Link>
-                )}
-                
             </div>
         </div>
     );

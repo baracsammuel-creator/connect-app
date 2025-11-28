@@ -65,17 +65,10 @@ export default function Header() {
                     {/* Buton Autentificare (pe desktop) */}
                     {/* ... (logica dvs. existentă pentru butonul de autentificare/rol) ... */}
                     {!loading && (
-                        user ? (
+                        user && (
                             <div className="text-sm font-medium text-gray-600 px-3 py-1 bg-gray-100 rounded-full">
                                 Logat ca: {role.toUpperCase()}
                             </div>
-                        ) : (
-                            <Link 
-                                href="/test" 
-                                className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium transition duration-150 transform hover:scale-105 shadow-md"
-                            >
-                                Login Test
-                            </Link>
                         )
                     )}
                 </nav>
@@ -99,18 +92,10 @@ export default function Header() {
                     {/* Afișează starea de logare/butonul de login în meniul vertical */}
                     {!loading && (
                         <div className="pt-4 border-t border-gray-100">
-                            {user ? (
+                            {user && (
                                 <div className="text-sm font-medium text-gray-600 px-3 py-2 bg-gray-100 rounded-md">
                                     Logat ca: {role.toUpperCase()}
                                 </div>
-                            ) : (
-                                <Link 
-                                    href="/test" 
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="block bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium text-center transition shadow-md"
-                                >
-                                    Login Test
-                                </Link>
                             )}
                         </div>
                     )}
