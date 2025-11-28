@@ -2,29 +2,15 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-// Am eliminat importul de getAuth și signOut, deoarece nu mai sunt folosite
-// import { getAuth, signOut } from 'firebase/auth'; 
 
 export default function Header() {
     const { user, role, loading } = useAuth();
-    // Am eliminat referința la getAuth()
-    // const auth = getAuth(); 
-
-    // Am eliminat funcția handleLogout
-    /*
-    const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            // Redirecționarea se va face automat prin hook-ul useAuth
-        } catch (error) {
-            console.error("Eroare la delogare:", error);
-        }
-    };
-    */
 
     const navItems = [
         { name: "Acasă", href: "/", isVisible: true },
         { name: "Despre", href: "/about", isVisible: true },
+        // Noul link pentru Evenimente, vizibil pentru toți utilizatorii
+        { name: "Evenimente", href: "/events", isVisible: true }, 
         // Link-ul Profilului, vizibil doar dacă utilizatorul este logat
         { name: "Profil", href: "/profile", isVisible: user && !loading }, 
         // Link-ul Dashboard-ului, vizibil pentru Lideri și Admini
@@ -58,13 +44,13 @@ export default function Header() {
                     {!loading && (
                         user ? (
                             // AM ELIMINAT BUTONUL DE LOGOUT
-                            <div className="text-sm font-medium text-gray-600 px-3 py-1 bg-gray-100 rounded-md">
+                            <div className="text-sm font-medium text-gray-600 px-3 py-1 bg-gray-100 rounded-full">
                                 Logat ca: {role.toUpperCase()}
                             </div>
                         ) : (
                             <Link 
                                 href="/test" 
-                                className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium transition"
+                                className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium transition duration-150 transform hover:scale-105 shadow-md"
                             >
                                 Login Test
                             </Link>
