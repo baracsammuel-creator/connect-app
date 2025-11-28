@@ -1,4 +1,3 @@
-// src/components/HomePageContent.js
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -13,48 +12,87 @@ export default function HomePageContent() {
     let icon = "👋";
 
     if (loading) {
-        return <div className="text-xl text-indigo-600">Se încarcă datele...</div>;
+        // Asigurăm că centrul este ocupat cât timp se încarcă
+        return (
+            <div className="flex justify-center items-center h-40">
+                <div className="text-xl text-indigo-600 animate-pulse">Se încarcă datele...</div>
+            </div>
+        );
     }
 
+    // Setăm mesajele pe baza rolului
     if (role === 'admin') {
         welcomeMessage = "Bun venit, Administrator!";
-        callToAction = "Mergeți la Dashboard pentru a gestiona rolurile.";
+        callToAction = "Mergeți la Dashboard pentru a gestiona rolurile și evenimentele.";
         colorClass = "text-red-600";
         icon = "👑";
     } else if (role === 'lider') {
         welcomeMessage = "Bun venit, Lider Connect!";
-        callToAction = "Verificați noutățile din Dashboard-ul echipei.";
+        callToAction = "Verificați noutățile din Dashboard-ul echipei și planificați evenimente.";
         colorClass = "text-green-600";
         icon = "💡";
-    } else { // Adolescent (sau nu complet setat)
+    } else if (user) { 
+        // Utilizator logat, dar nu admin/lider (probabil 'adolescent')
         welcomeMessage = "Suntem bucuroși să te avem alături!";
-        callToAction = "Începe prin a explora resursele noastre.";
+        callToAction = "Începe prin a explora calendarul și resursele noastre.";
         colorClass = "text-blue-600";
         icon = "🌟";
+    } else {
+        // Utilizator neautentificat (vizitator)
+        welcomeMessage = "Bun venit pe Connect Calendar!";
+        callToAction = "Autentificați-vă pentru a vedea evenimentele și a interacționa cu platforma.";
+        colorClass = "text-gray-600";
+        icon = "🌐";
     }
 
     return (
-        <div className="p-8 bg-white shadow-xl rounded-xl max-w-xl w-full text-center border-t-4 border-indigo-500">
-            <div className={`text-6xl mb-4 ${colorClass}`}>{icon}</div>
-            <h1 className={`text-4xl font-extrabold mb-2 ${colorClass}`}>
+        // Containerul principal este centrat și utilizează padding flexibil
+        <div className="p-6 sm:p-10 bg-white shadow-2xl rounded-2xl max-w-xl w-full mx-auto text-center border-t-8 border-indigo-500/80 transform hover:shadow-3xl transition duration-300">
+            <div className={`text-5xl sm:text-7xl mb-4 ${colorClass} animate-bounce-slow`}>{icon}</div>
+            
+            <h1 className={`text-3xl sm:text-4xl font-extrabold mb-2 ${colorClass} leading-tight`}>
                 {welcomeMessage}
             </h1>
-            <p className="text-xl text-gray-700 mb-6">
-                {user ? `Ești logat ca: ${role.toUpperCase()}` : 'Ești un vizitator nou.'}
+            
+            <p className="text-md sm:text-xl text-gray-700 mb-4">
+                {user ? `Ești logat ca: ${role.toUpperCase()}` : 'Ești un vizitator neautentificat.'}
             </p>
-            <p className="text-lg text-gray-500 mb-8">
+            
+            <p className="text-base sm:text-lg text-gray-500 mb-8 max-w-sm mx-auto">
                 {callToAction}
             </p>
 
-            {/* Link condiționat pentru Dashboard */}
-            {(role === 'admin' || role === 'lider') && (
-                <Link 
-                    href="/dashboard"
-                    className="mt-4 inline-block bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg transition duration-150"
-                >
-                    Accesează Dashboard-ul
-                </Link>
-            )}
+            {/* Link-uri Condiționate */}
+            <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                
+                {/* Buton principal (Dashboard sau Login/Resurse) */}
+                {(role === 'admin' || role === 'lider') ? (
+                    <Link 
+                        href="/dashboard"
+                        className="w-full sm:w-auto inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:scale-[1.02]"
+                    >
+                        Accesează Dashboard-ul
+                    </Link>
+                ) : (
+                    <Link 
+                        href="/calendar"
+                        className="w-full sm:w-auto inline-block bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-md transform hover:scale-[1.02]"
+                    >
+                        Vezi Calendarul
+                    </Link>
+                )}
+                
+                {/* Buton secundar (pentru autentificare, dacă nu e logat) */}
+                {!user && (
+                    <Link 
+                        href="/test"
+                        className="w-full sm:w-auto inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition duration-200 shadow-md"
+                    >
+                        Login Test
+                    </Link>
+                )}
+                
+            </div>
         </div>
     );
 }

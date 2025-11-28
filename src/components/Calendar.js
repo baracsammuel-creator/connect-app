@@ -419,7 +419,7 @@ export default function Calendar() {
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
-                        <span className="text-2xl font-extrabold text-indigo-700 capitalize">
+                        <span className="text-xl sm:text-2xl font-extrabold text-indigo-700 capitalize">
                             {format(currentMonth, 'MMMM yyyy', { locale: ro })}
                         </span>
                         <button 
@@ -432,17 +432,17 @@ export default function Calendar() {
                 </div>
 
                 {/* Numele Zilelor Săptămânii */}
-                <div className="grid grid-cols-7 text-center font-bold text-gray-700 uppercase border-b border-indigo-300">
-                    {romanianDayNamesFull.map((day, index) => (
-                        <div 
-                            key={day} 
-                            className="h-10 flex items-center justify-center text-sm"
-                        >
-                            <span className="hidden sm:inline">{day}</span>
-                            <span className="sm:hidden">{dayNames[index]}</span>
-                        </div>
-                    ))}
-                </div>
+                    <div className="grid grid-cols-7 text-center font-bold text-gray-700 uppercase border-b border-indigo-300">
+                        {romanianDayNamesFull.map((day, index) => (
+                            <div 
+                                key={day} 
+                                className="h-10 flex items-center justify-center text-xs sm:text-sm" // Modificare aici
+                            >
+                                <span className="hidden sm:inline">{day}</span>
+                                <span className="sm:hidden">{dayNames[index]}</span> {/* Presupunem că dayNames sunt inițialele */}
+                            </div>
+                        ))}
+                    </div>
 
                 {/* Grila Zilelor - Adaptată pentru mobil */}
                 <div className="grid grid-cols-7 auto-rows-[4rem] sm:auto-rows-[6rem] gap-0.5 sm:gap-1 mt-1">
@@ -486,13 +486,13 @@ export default function Calendar() {
                                     {dayEvents.length > 0 && (
                                         <div className="flex flex-col items-start mt-0.5 sm:mt-1 w-full max-h-8 sm:max-h-12 overflow-hidden px-0.5 sm:px-1 space-y-0.5">
                                             {dayEvents.slice(0, 1).map((event) => (
-                                                <span 
-                                                    key={event.id}
-                                                    className="text-[10px] sm:text-xs font-medium text-white bg-indigo-600 px-1 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-indigo-700/50"
-                                                    title={event.title}
-                                                >
-                                                    {event.time ? `${event.time} - ${event.title}` : event.title}
-                                                </span>
+                                            <span
+                                                className="text-xs sm:text-sm font-medium text-white bg-indigo-600 px-1.5 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-indigo-700/50"
+                                                title={event.title}
+                                                key={event.time}
+                                            >
+                                                {event.time ? `${event.time} - ${event.title}` : event.title}
+                                            </span>
                                             ))}
                                             {dayEvents.length > 1 && (
                                                 <span className="text-[10px] sm:text-xs text-gray-600 bg-gray-200 rounded-full px-1.5 py-0.5 font-bold mt-0.5">
