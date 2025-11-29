@@ -39,7 +39,11 @@ export default function DashboardContent() {
             const idToken = await auth.currentUser.getIdToken();
             
             // NOTĂ: Endpoint-ul /api/users trebuie să fie implementat
-            const response = await fetch(`/api/users?idToken=${idToken}`);
+            const response = await fetch('/api/users', {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`
+                }
+            });
             const data = await response.json();
 
             if (!response.ok || !data.success) {

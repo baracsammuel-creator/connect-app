@@ -9,15 +9,19 @@ const adminAuth = admin.auth();
  */
 export async function GET(req) {
     try {
-        const url = new URL(req.url);
-        // Token-ul adminului este trimis ca parametru de căutare (sau header, dar param e mai simplu pt fetch)
-        const idToken = url.searchParams.get('idToken');
+        // 1. Extrage token-ul din header-ul Authorization
+        const authorizationHeader = req.headers.get('Authorization');
+        if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ message: 'Header-ul de autorizare lipsește sau este invalid.' }, { status: 401 });
+        }
+
+        const idToken = authorizationHeader.split('Bearer ')[1];
 
         if (!idToken) {
             return NextResponse.json({ message: 'Token-ul de autentificare lipsește.' }, { status: 401 });
         }
 
-        // 1. VERIFICARE SECURITATE: Decodăm token-ul pentru a verifica rolul
+        // 2. VERIFICARE SECURITATE: Decodăm token-ul pentru a verifica rolul
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         
         // Asigurăm-ne că doar utilizatorii cu rolul 'admin' pot executa această funcție
@@ -25,10 +29,10 @@ export async function GET(req) {
             return NextResponse.json({ message: 'Acces neautorizat. Doar Adminii pot vizualiza lista de utilizatori.' }, { status: 403 });
         }
         
-        // 2. Extrage toți utilizatorii din Firebase Auth (maximum 1000 la un singur apel)
+        // 3. Extrage toți utilizatorii din Firebase Auth (maximum 1000 la un singur apel)
         const listUsersResult = await adminAuth.listUsers();
         
-        // 3. Maparea datelor pentru a returna doar informațiile relevante
+        // 4. Maparea datelor pentru a returna doar informațiile relevante
         const users = listUsersResult.users.map(user => {
             // Extrage rolul din custom claims (default 'adolescent' dacă lipsește)
             const role = user.customClaims?.role || (user.isAnonymous ? 'adolescent' : 'necunoscut');
