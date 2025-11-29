@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
 // Am adăugat 'updateDoc' și 'deleteDoc' în importul din 'firebase/firestore'
 import { getFirestore, collection, doc, query, where, getDocs, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
@@ -40,6 +40,16 @@ if (dbInitialized) {
         app = initializeApp(firebaseConfig);
         db = getFirestore(app);
         auth = getAuth(app);
+        
+        // Configurăm persistența pentru a păstra sesiunea între închideri de aplicație
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                console.log("Firebase Auth persistence set to LOCAL");
+            })
+            .catch((error) => {
+                console.error("Eroare la setarea persistenței Firebase Auth:", error);
+            });
+        
         console.log("Firebase App și Firestore DB au fost inițializate.");
     } catch (error) {
         console.error("Eroare la inițializarea Firebase/Firestore:", error);
@@ -70,6 +80,13 @@ export const initializeAuth = async () => {
     }
 
     try {
+        // Verificăm dacă există deja un utilizator autentificat (sesiune persistată)
+        if (auth.currentUser) {
+            console.log("Utilizator existent găsit din sesiune persistată:", auth.currentUser.uid);
+            return auth.currentUser.uid;
+        }
+
+        // Dacă nu există utilizator, autentificăm
         if (initialAuthToken) {
             await signInWithCustomToken(auth, initialAuthToken);
         } else {
@@ -79,7 +96,7 @@ export const initializeAuth = async () => {
 
         const user = auth.currentUser;
         if (user) {
-            // console.log("Autentificare reușită. User ID:", user.uid);
+            console.log("Autentificare reușită. User ID:", user.uid);
             return user.uid;
         } else {
             console.error("Autentificare eșuată: Nu s-a obținut utilizatorul.");

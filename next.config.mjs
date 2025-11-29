@@ -8,6 +8,38 @@ const pwaOptions = {
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development', // Recommended: Disable PWA in development mode
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'firebase-storage-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/.*\.firebaseio\.com\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'firebase-data-cache',
+        networkTimeoutSeconds: 10,
+      },
+    },
+    {
+      urlPattern: /\.(?:js|css|woff2?|png|jpg|jpeg|svg|gif|webp)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'static-assets-cache',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        },
+      },
+    },
+  ],
 };
 
 // 2. Define your base Next.js configuration
