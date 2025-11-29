@@ -21,6 +21,12 @@ import { ro } from 'date-fns/locale';
 import EventFormModal from './EventFormModal';
 import EventDetailModal from './EventDetailModal';
 
+// Importăm noile componente pentru view-uri
+import ViewSwitcher from './calendar/ViewSwitcher';
+import CalendarWeekView from './calendar/CalendarWeekView';
+import CalendarAgendaView from './calendar/CalendarAgendaView';
+import EventPreviewTooltip from './calendar/EventPreviewTooltip';
+
 import {
     onSnapshot, 
     query, 
@@ -51,6 +57,15 @@ export default function Calendar() {
     const [events, setEvents] = useState({}); 
     // NOU: Stare pentru a stoca numărul de participanți { eventId: count }
     const [participantCounts, setParticipantCounts] = useState({});
+    
+    // NOU: Stare pentru view-ul curent (month, week, agenda)
+    const [currentView, setCurrentView] = useState('month');
+    
+    // NOU: Stare pentru hover preview
+    const [hoverPreview, setHoverPreview] = useState(null);
+    
+    // NOU: Stare pentru drag & drop
+    const [draggedEvent, setDraggedEvent] = useState(null);
     const [editModalState, setEditModalState] = useState({
         isOpen: false,
         eventToEdit: null, // Null pentru creare, obiect eveniment pentru editare
@@ -280,6 +295,49 @@ export default function Calendar() {
         }
     }
 
+    // NOU: Funcție pentru a determina culoarea evenimentului bazat pe rol creator
+    const getEventColor = useCallback((event) => {
+        // Putem extinde logica pentru a colora diferit bazat pe alte criterii
+        if (!event) return 'bg-blue-500';
+        
+        // Colorare bazată pe rol (dacă este disponibil)
+        if (event.role === 'admin') return 'bg-purple-600';
+        if (event.role === 'lider') return 'bg-blue-600';
+        
+        // Colorare bazată pe număr de participanți
+        const count = participantCounts[event.id] || 0;
+        if (count >= 10) return 'bg-green-600';
+        if (count >= 5) return 'bg-cyan-600';
+        
+        return 'bg-blue-500';
+    }, [participantCounts]);
+
+    // NOU: Handlers pentru drag & drop
+    const handleEventDragStart = (e, event) => {
+        setDraggedEvent(event);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleEventDrop = async (e, newDateKey, newTime) => {
+        e.preventDefault();
+        if (!draggedEvent || !isAuthorizedToModify(draggedEvent)) return;
+
+        try {
+            // Actualizăm evenimentul cu noua dată și oră
+            const updates = { date: newDateKey };
+            if (newTime) {
+                updates.time = newTime;
+            }
+            
+            await updateEvent(draggedEvent.id, updates);
+            console.log('Eveniment reprogramat cu succes!');
+        } catch (error) {
+            console.error('Eroare la reprogramarea evenimentului:', error);
+        } finally {
+            setDraggedEvent(null);
+        }
+    };
+
     // Evenimentele pentru ziua selectată
     const selectedDateKey = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null;
     const eventsForSelectedDay = events[selectedDateKey] || [];
@@ -289,10 +347,14 @@ export default function Calendar() {
     const dayNames = romanianDayNamesFull.map((day, index) => format(new Date(2023, 0, index + 1), 'EEE', { locale: ro }));
     
     return (
-        <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl mx-auto relative border-4 border-theme-primary-light">
-            <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900">
-                Calendar Evenimente
-            </h2>
+        <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-6xl mx-auto relative border-4 border-theme-primary-light">
+            {/* Header with Title and View Switcher */}
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <h2 className="text-3xl font-extrabold text-gray-900">
+                    Calendar Evenimente
+                </h2>
+                <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
+            </div>
             
             {/* Stare de Încărcare */}
             {isFetching && (
@@ -304,7 +366,8 @@ export default function Calendar() {
             {/* Secțiunea Calendar Grid */}
             {!isFetching && (
                 <>
-                {/* Antetul Calendarului cu Navigare */}
+                {/* Antetul Calendarului cu Navigare - doar pentru Month și Week view */}
+                {(currentView === 'month' || currentView === 'week') && (
                 <div className="flex flex-col items-center px-4 py-3 mb-4 text-xl font-extrabold text-gray-800 border-b-2 border-theme-primary/20">
                     <div className="flex justify-between items-center w-full max-w-sm">
                         <button 
@@ -324,7 +387,11 @@ export default function Calendar() {
                         </button>
                     </div>
                 </div>
+                )}
 
+                {/* Month View */}
+                {currentView === 'month' && (
+                <>
                 {/* Numele Zilelor Săptămânii */}
                     <div className="grid grid-cols-7 text-center font-bold text-gray-700 uppercase border-b border-theme-primary/30">
                         {romanianDayNamesFull.map((day, index) => (
@@ -378,31 +445,66 @@ export default function Calendar() {
                                     </span>
                                     
                                     {dayEvents.length > 0 && (
-                                        <div className="flex flex-col items-start mt-0.5 sm:mt-1 w-full max-h-8 sm:max-h-12 overflow-hidden px-0.5 sm:px-1 space-y-0.5">
-                                            {dayEvents.slice(0, 1).map((event) => (
-                                            <span
-                                                className="text-xs sm:text-sm font-medium text-white bg-theme-primary px-1.5 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-theme-primary-dark/50"
-                                                title={event.title}
-                                                key={event.time}
-                                            >
-                                                {event.time ? `${event.time} - ${event.title}` : event.title}
-                                            </span>
+                                         <div className="flex flex-col items-start mt-0.5 sm:mt-1 w-full max-h-8 sm:max-h-12 overflow-hidden px-0.5 sm:px-1 space-y-0.5">
+                                             {dayEvents.slice(0, 1).map((event) => (
+                                             <span
+                                                 className={`text-xs sm:text-sm font-medium text-white ${getEventColor(event)} px-1.5 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-white/30`}
+                                                 title={event.title}
+                                                 key={event.time}
+                                                 onMouseEnter={(e) => {
+                                                     const rect = e.target.getBoundingClientRect();
+                                                     setHoverPreview({
+                                                         event,
+                                                         position: { x: rect.left, y: rect.bottom + 5 }
+                                                     });
+                                                 }}
+                                                 onMouseLeave={() => setHoverPreview(null)}
+                                             >
+                                                 {event.time ? `${event.time} - ${event.title}` : event.title}
+                                             </span>
                                             ))}
                                             {dayEvents.length > 1 && (
                                                 <span className="text-[10px] sm:text-xs text-gray-600 bg-gray-200 rounded-full px-1.5 py-0.5 font-bold mt-0.5">
                                                     + {dayEvents.length - 1}
                                                 </span>
                                             )}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-                
-                {/* --- Secțiunea de Afișare Evenimente pentru Ziua Selectată (Mobile-Friendly) --- */}
-                <div className="mt-8 border-t-4 border-theme-primary/50 pt-6">
+                                         </div>
+                                     )}
+                                 </div>
+                             </div>
+                         );
+                     })}
+                 </div>
+                 </>
+                 )}
+
+                 {/* Week View */}
+                 {currentView === 'week' && (
+                     <CalendarWeekView
+                         currentDate={currentMonth}
+                         events={events}
+                         participantCounts={participantCounts}
+                         onEventClick={handleOpenDetailModal}
+                         onDayClick={handleDayClick}
+                         onEventDragStart={handleEventDragStart}
+                         onEventDrop={handleEventDrop}
+                         getEventColor={getEventColor}
+                     />
+                 )}
+
+                 {/* Agenda View */}
+                 {currentView === 'agenda' && (
+                     <CalendarAgendaView
+                         events={events}
+                         participantCounts={participantCounts}
+                         onEventClick={handleOpenDetailModal}
+                         getEventColor={getEventColor}
+                     />
+                 )}
+                 
+                 {/* --- Secțiunea de Afișare Evenimente pentru Ziua Selectată (Mobile-Friendly) - doar pentru Month view --- */}
+                 {currentView === 'month' && (
+                 <div className="mt-8 border-t-4 border-theme-primary/50 pt-6">
                     <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 flex justify-between items-center">
                         Evenimente pe {selectedDate.toLocaleDateString('ro-RO')}
                         {isAuthorizedToCreate && (
@@ -475,10 +577,11 @@ export default function Calendar() {
                     {user && !isAuthorizedToCreate && (
                         <p className="mt-4 text-center text-sm text-gray-500">
                             Sunteți autentificat! Doar utilizatorii cu rolul de Admin sau Lider pot adăuga evenimente noi. Puteți edita doar evenimentele pe care le-ați creat.
-                        </p>
-                    )}
-                </div>
-                </>
+                         </p>
+                     )}
+                 </div>
+                 )}
+                 </>
             )}
             
             {/* Modalul de Creare/Editare Eveniment */}
@@ -500,6 +603,16 @@ export default function Calendar() {
                     event={detailModalState.event}
                     onClose={handleCloseDetailModal}
                     currentUser={user}
+                />
+            )}
+
+            {/* Hover Preview Tooltip */}
+            {hoverPreview && (
+                <EventPreviewTooltip
+                    event={hoverPreview.event}
+                    participantCount={participantCounts[hoverPreview.event.id]}
+                    position={hoverPreview.position}
+                    onClose={() => setHoverPreview(null)}
                 />
             )}
         </div>

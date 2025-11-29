@@ -41,7 +41,7 @@ export default function Header() {
         return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
     };
     return (
-        <header className="bg-white shadow-md sticky top-0 z-10">
+        <header className="bg-white shadow-md sticky top-0 z-50">
             {/* CONTAINERUL PRINCIPAL: Vizibil pe toate ecranele */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                 
