@@ -19,16 +19,6 @@ export default function DebugLoginPage() {
     const [email, setEmail] = useState(''); 
     const [password, setPassword] = useState(''); 
     
-    // Asigură că utilizatorii logați sunt trimiși acasă
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                router.push('/');
-            }
-        });
-        return () => unsubscribe();
-    }, [router]);
-
     // FUNCTIA PENTRU LOGIN-UL CU EMAIL/PAROLĂ (TEST)
     const handleTestLogin = async (e) => {
         e.preventDefault();
@@ -38,6 +28,8 @@ export default function DebugLoginPage() {
         try {
             await setPersistence(auth, browserLocalPersistence);
             await signInWithEmailAndPassword(auth, email, password);
+            // Redirecționare manuală la pagina principală după login reușit
+            router.push('/');
         } catch (e) {
             setError('Autentificare eșuată. Verificați email-ul/parola.');
         } finally {

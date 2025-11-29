@@ -49,6 +49,10 @@ export async function GET(req) {
 
     } catch (error) {
         console.error('Eroare la listarea utilizatorilor (API):', error.message);
-        return NextResponse.json({ message: `Eroare internă: ${error.message}` }, { status: 500 });
+        // Nu expune mesajul de eroare intern în producție
+        const errorMessage = process.env.NODE_ENV === 'production' 
+            ? 'A apărut o eroare internă pe server.' 
+            : `Eroare internă: ${error.message}`;
+        return NextResponse.json({ message: errorMessage }, { status: 500 });
     }
 }

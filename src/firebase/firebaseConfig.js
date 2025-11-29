@@ -172,4 +172,4 @@ export const deleteEvent = (eventId) => {
 
 // Exportăm instanțele de bază pentru utilizare în alte părți ale aplicației
 // Am adăugat 'updateEvent' și 'deleteEvent' la export pentru a fi disponibile global
-export { app, db, auth, onSnapshot, collection, query, dbInitialized, updateEvent, deleteEvent };
+export { app, db, auth, onSnapshot, collection, query, dbInitialized };

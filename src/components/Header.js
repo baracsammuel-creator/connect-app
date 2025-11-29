@@ -1,11 +1,15 @@
 "use client";
 
 import Link from 'next/link';
+// 1. Importăm hook-ul usePathname pentru a detecta ruta curentă
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // 2. Obținem calea URL-ului curent (ex: "/", "/events", "/dashboard")
+    const pathname = usePathname();
 
     const { user, role, loading } = useAuth();
 
@@ -20,6 +24,22 @@ export default function Header() {
         { name: "Dashboard", href: "/dashboard", isVisible: user && (role === 'admin' || role === 'lider') && !loading }, 
     ];
 
+    // 3. Funcție ajutătoare pentru a genera clasele CSS în funcție de starea link-ului (activ/inactiv)
+    const getLinkClassName = (href, isMobile = false) => {
+        const isActive = pathname === href;
+
+        if (isMobile) {
+            const baseClasses = "block text-gray-700 px-3 py-2 rounded-md text-base font-medium transition";
+            const activeClasses = "bg-indigo-100 text-indigo-700 font-semibold";
+            const inactiveClasses = "hover:bg-indigo-50 hover:text-indigo-600";
+            return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+        }
+
+        const baseClasses = "text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition";
+        const activeClasses = "text-indigo-600 font-bold bg-indigo-50";
+        const inactiveClasses = "hover:text-indigo-600";
+        return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+    };
     return (
         <header className="bg-white shadow-md sticky top-0 z-10">
             {/* CONTAINERUL PRINCIPAL: Vizibil pe toate ecranele */}
@@ -56,7 +76,8 @@ export default function Header() {
                             <Link 
                                 key={item.name} 
                                 href={item.href} 
-                                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition"
+                                // 4. Aplicăm clasele dinamice pentru meniul de desktop
+                                className={getLinkClassName(item.href)}
                             >
                                 {item.name}
                             </Link>
@@ -83,7 +104,8 @@ export default function Header() {
                                 key={item.name} 
                                 href={item.href} 
                                 onClick={() => setIsMenuOpen(false)} // Închide meniul la click
-                                className="block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 px-3 py-2 rounded-md text-base font-medium transition"
+                                // 5. Aplicăm clasele dinamice pentru meniul mobil
+                                className={getLinkClassName(item.href, true)}
                             >
                                 {item.name}
                             </Link>

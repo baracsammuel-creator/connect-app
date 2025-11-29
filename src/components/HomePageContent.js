@@ -69,20 +69,20 @@ export default function HomePageContent() {
                 {
                     (role === 'admin' || role === 'lider') && 
                         <>
-                        <Link
-                            href="/dashboard"
-                            className="w-full sm:w-auto inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:scale-[1.02]"
-                        >
-                        Accesează Dashboard-ul
-                        </Link>
-                        <Link
-                            href="/events"
-                            className="w-full sm:w-auto inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-md transform hover:scale-[1.02]"
-                        >
-                            Vezi Calendarul
-                        </Link>
+                            <Link
+                                href="/dashboard"
+                                className="w-full sm:w-auto inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:scale-[1.02]"
+                            >
+                            Accesează Dashboard-ul
+                            </Link>
                         </>
                 }
+                <Link
+                    href="/events"
+                    className="w-full sm:w-auto inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-md transform hover:scale-[1.02]"
+                >
+                    Vezi Calendarul
+                </Link>
                 
             </div>
         </div>
