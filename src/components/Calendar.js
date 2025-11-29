@@ -289,14 +289,14 @@ export default function Calendar() {
     const dayNames = romanianDayNamesFull.map((day, index) => format(new Date(2023, 0, index + 1), 'EEE', { locale: ro }));
     
     return (
-        <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl mx-auto relative border-4 border-indigo-100">
+        <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl mx-auto relative border-4 border-theme-primary-light">
             <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900">
                 Calendar Evenimente
             </h2>
             
             {/* Stare de Încărcare */}
             {isFetching && (
-                <div className="py-12 text-center text-indigo-600 font-semibold text-lg">
+                <div className="py-12 text-center text-theme-primary font-semibold text-lg">
                     Se încarcă evenimentele în timp real...
                 </div>
             )}
@@ -305,20 +305,20 @@ export default function Calendar() {
             {!isFetching && (
                 <>
                 {/* Antetul Calendarului cu Navigare */}
-                <div className="flex flex-col items-center px-4 py-3 mb-4 text-xl font-extrabold text-gray-800 border-b-2 border-indigo-200">
+                <div className="flex flex-col items-center px-4 py-3 mb-4 text-xl font-extrabold text-gray-800 border-b-2 border-theme-primary/20">
                     <div className="flex justify-between items-center w-full max-w-sm">
                         <button 
                             onClick={goToPreviousMonth} 
-                            className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="p-2 rounded-lg text-theme-primary hover:bg-theme-primary-light hover:text-theme-primary-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-theme-primary"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
-                        <span className="text-xl sm:text-2xl font-extrabold text-indigo-700 capitalize">
+                        <span className="text-xl sm:text-2xl font-extrabold text-theme-primary-dark capitalize">
                             {format(currentMonth, 'MMMM yyyy', { locale: ro })}
                         </span>
                         <button 
                             onClick={goToNextMonth} 
-                            className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="p-2 rounded-lg text-theme-primary hover:bg-theme-primary-light hover:text-theme-primary-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-theme-primary"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                         </button>
@@ -326,7 +326,7 @@ export default function Calendar() {
                 </div>
 
                 {/* Numele Zilelor Săptămânii */}
-                    <div className="grid grid-cols-7 text-center font-bold text-gray-700 uppercase border-b border-indigo-300">
+                    <div className="grid grid-cols-7 text-center font-bold text-gray-700 uppercase border-b border-theme-primary/30">
                         {romanianDayNamesFull.map((day, index) => (
                             <div 
                                 key={day} 
@@ -347,24 +347,24 @@ export default function Calendar() {
                         const isCurrentMonth = isSameMonth(day, currentMonth);
                         const isToday = isSameDay(day, today);
 
-                        let cellClasses = 'rounded-lg sm:rounded-xl h-full transition duration-300 border border-gray-100 cursor-pointer group shadow-sm';
+                        let cellClasses = 'rounded-lg sm:rounded-xl h-full transition duration-300 border cursor-pointer group shadow-sm';
                         
                         if (!isCurrentMonth) {
-                            cellClasses += ' text-gray-400 bg-gray-50 opacity-70 pointer-events-none shadow-inner';
+                            cellClasses += ' text-gray-400 bg-gray-50 opacity-70 pointer-events-none shadow-inner border-gray-100';
                         } else {
-                            cellClasses += ' bg-white hover:bg-indigo-50 hover:shadow-lg';
+                            cellClasses += ' bg-white hover:bg-theme-primary-light hover:shadow-lg border-gray-100';
                         }
                         
                         if (isToday && !isSelected) {
-                            cellClasses = 'bg-indigo-100 text-indigo-800 shadow-xl relative overflow-hidden ring-2 ring-indigo-400/50';
+                            cellClasses += ' bg-theme-primary-light text-theme-primary-dark shadow-xl relative overflow-hidden ring-2 ring-theme-primary/50 border-transparent';
                         }
 
                         if (isSelected) {
-                            cellClasses = 'bg-indigo-600 text-white shadow-2xl relative overflow-hidden transform scale-[1.01] border-indigo-700 z-10';
+                            cellClasses = 'rounded-lg sm:rounded-xl h-full transition duration-300 cursor-pointer group bg-theme-primary text-white shadow-2xl relative overflow-hidden transform scale-[1.01] border-theme-primary-dark z-10';
                         }
                         
                         // Indicator eveniment (bulină roșie)
-                        const hasEventsClass = dayEvents.length > 0 ? "relative after:absolute after:bottom-1 after:right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:shadow-lg sm:after:w-3 sm:after:h-3" : "";
+                        const hasEventsClass = dayEvents.length > 0 ? "relative after:absolute after:bottom-1 after:right-1 after:w-2 after:h-2 after:bg-theme-danger after:rounded-full after:shadow-lg sm:after:w-3 sm:after:h-3" : "";
 
                         return (
                             <div
@@ -373,7 +373,7 @@ export default function Calendar() {
                                 onClick={() => handleDayClick(day)}
                             >
                                 <div className="flex flex-col items-start justify-start h-full w-full relative">
-                                    <span className={`text-md sm:text-lg font-extrabold transition duration-300 ${isSelected ? 'text-white' : (isCurrentMonth ? 'text-gray-900 group-hover:text-indigo-800' : 'text-gray-500')}`}>
+                                    <span className={`text-md sm:text-lg font-extrabold transition duration-300 ${isSelected ? 'text-white' : (isCurrentMonth ? 'text-gray-900 group-hover:text-theme-primary-dark' : 'text-gray-500')}`}>
                                         {format(day, 'd')}
                                     </span>
                                     
@@ -381,7 +381,7 @@ export default function Calendar() {
                                         <div className="flex flex-col items-start mt-0.5 sm:mt-1 w-full max-h-8 sm:max-h-12 overflow-hidden px-0.5 sm:px-1 space-y-0.5">
                                             {dayEvents.slice(0, 1).map((event) => (
                                             <span
-                                                className="text-xs sm:text-sm font-medium text-white bg-indigo-600 px-1.5 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-indigo-700/50"
+                                                className="text-xs sm:text-sm font-medium text-white bg-theme-primary px-1.5 sm:px-2 py-0.5 rounded-full truncate w-full text-left sm:text-center shadow-md border border-theme-primary-dark/50"
                                                 title={event.title}
                                                 key={event.time}
                                             >
@@ -402,7 +402,7 @@ export default function Calendar() {
                 </div>
                 
                 {/* --- Secțiunea de Afișare Evenimente pentru Ziua Selectată (Mobile-Friendly) --- */}
-                <div className="mt-8 border-t-4 border-indigo-500/50 pt-6">
+                <div className="mt-8 border-t-4 border-theme-primary/50 pt-6">
                     <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 flex justify-between items-center">
                         Evenimente pe {selectedDate.toLocaleDateString('ro-RO')}
                         {isAuthorizedToCreate && (
@@ -413,7 +413,7 @@ export default function Calendar() {
                                     px-3 py-1 sm:px-4 sm:py-2 text-sm font-medium rounded-full transition shadow-lg flex items-center
                                     ${isPastDate 
                                         ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-70' // Stil pentru disabled
-                                        : 'bg-green-500 text-white hover:bg-green-600' // Stil normal
+                                        : 'bg-theme-success text-white hover:bg-opacity-90' // Stil normal
                                     }
                                 `}
                                 title={isPastDate ? "Nu se pot adăuga evenimente în trecut" : "Adaugă un eveniment nou"}
@@ -430,18 +430,18 @@ export default function Calendar() {
                                 <li 
                                     key={event.id}
                                     // Am adăugat cursor-pointer pentru a indica interactivitatea
-                                    className="p-3 sm:p-4 bg-indigo-50 border-l-4 border-indigo-600 rounded-lg shadow-sm hover:shadow-md transition duration-200 flex justify-between items-start cursor-pointer"
+                                    className="p-3 sm:p-4 bg-theme-primary-light border-l-4 border-theme-primary rounded-lg shadow-sm hover:shadow-md transition duration-200 flex justify-between items-start cursor-pointer"
                                     onClick={() => handleOpenDetailModal(event)} // Deschide modala de detalii
                                 >
                                     <div className="flex-grow">
-                                        <p className="text-base sm:text-lg font-semibold text-indigo-800">
-                                            {event.time && <span className="font-extrabold mr-2 text-indigo-700 bg-indigo-200 px-2 py-0.5 rounded-md text-sm">{event.time}</span>}
+                                        <p className="text-base sm:text-lg font-semibold text-theme-primary-dark">
+                                            {event.time && <span className="font-extrabold mr-2 text-theme-primary-dark bg-theme-primary/20 px-2 py-0.5 rounded-md text-sm">{event.time}</span>}
                                             {event.title}
                                         </p>
                                         {event.description && <p className="text-gray-600 mt-1 text-sm">{event.description}</p>}
                                     </div>
                                     {/* NOU: Afișăm contorul de participanți */}
-                                    <div className="bottom-2 right-2 flex items-center bg-indigo-200 text-indigo-800 text-xs font-bold px-2 py-1 rounded-full">
+                                    <div className="bottom-2 right-2 flex items-center bg-theme-primary/20 text-theme-primary-dark text-xs font-bold px-2 py-1 rounded-full">
                                         <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path></svg>
                                         <span>{participantCounts[event.id] || 0}</span>
                                     </div>
@@ -452,7 +452,7 @@ export default function Calendar() {
                                                 e.stopPropagation(); // Previne deschiderea modalului de detalii
                                                 handleOpenEditEventModal(event);
                                             }}
-                                            className="ml-4 p-2 text-indigo-600 hover:text-indigo-800 bg-indigo-200/50 rounded-full hover:bg-indigo-200 transition relative z-10"
+                                            className="ml-4 p-2 text-theme-primary hover:text-theme-primary-dark bg-theme-primary/20 rounded-full hover:bg-theme-primary/30 transition relative z-10"
                                             title="Modifică evenimentul"
                                         >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>

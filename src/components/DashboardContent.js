@@ -107,7 +107,7 @@ export default function DashboardContent() {
     };
 
     if (loading) {
-        return <div className="text-center p-10 text-indigo-600 animate-pulse">Se verifică rolul...</div>;
+        return <div className="text-center p-10 text-theme-primary animate-pulse">Se verifică rolul...</div>;
     }
 
     // Afișează conținutul Dashboard-ului în funcție de rol
@@ -115,17 +115,16 @@ export default function DashboardContent() {
         // Container fluid și padding adaptiv
         <div className="w-full">
             
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Dashboard</h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-2">Dashboard</h1>
             
-            {/* Culoare text îmbunătățită pentru rol: Roșu/Indigo/Albastru închis */}
-            <p className={`text-lg font-semibold mb-6 ${isAdmin ? 'text-red-700' : isLider ? 'text-indigo-700' : 'text-blue-700'}`}>
+            <p className={`text-lg font-semibold mb-6`}>
                 Ești logat ca: {role.toUpperCase()}
             </p>
 
             {/* Secțiune vizibilă DOAR pentru Admin */}
             {isAdmin ? ( 
                 <div className="bg-white shadow-2xl overflow-hidden rounded-xl p-4 sm:p-6 border-t-8 border-red-500">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 border-b pb-2">Gestionarea Utilizatorilor</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4 border-b pb-2">Gestionarea Utilizatorilor</h2>
                     
                     {/* Afișarea stării operației (Mesaj adaptiv) */}
                     {statusMessage && (
@@ -139,9 +138,9 @@ export default function DashboardContent() {
                     )}
                     
                     {loadingUsers ? (
-                        <p className="text-indigo-600 p-4">Se încarcă lista de utilizatori...</p>
+                        <p className="text-theme-primary p-4">Se încarcă lista de utilizatori...</p>
                     ) : fetchError ? (
-                        <p className="text-red-500 p-4">Eroare la preluarea listei: {fetchError}</p>
+                        <p className="text-theme-danger p-4">Eroare la preluarea listei: {fetchError}</p>
                     ) : (
                         // Container care permite derularea pe orizontală pe ecrane mici
                         <div className="overflow-x-auto shadow-md rounded-lg">
@@ -156,7 +155,7 @@ export default function DashboardContent() {
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {users.map((u) => (
-                                        <tr key={u.uid} className={u.role === 'admin' ? 'bg-red-50' : u.role === 'lider' ? 'bg-indigo-50' : 'hover:bg-gray-50'}>
+                                        <tr key={u.uid} className={u.role === 'admin' ? 'bg-red-50' : u.role === 'lider' ? 'bg-blue-50' : 'hover:bg-gray-50'}>
                                             
                                             {/* UID - Afișează scurt pe mobil, complet pe desktop */}
                                             <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -165,11 +164,11 @@ export default function DashboardContent() {
                                                 {u.isAnonymous && <span className="text-xs text-gray-500 ml-1">(Anonim)</span>}
                                             </td>
 
-                                            {/* Rol Curent - Teme actualizate: Roșu, Indigo, Albastru */}
+                                            {/* Rol Curent - Teme actualizate */}
                                             <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-sm font-semibold">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                     u.role === 'admin' ? 'bg-red-200 text-red-800' : 
-                                                    u.role === 'lider' ? 'bg-indigo-200 text-indigo-800' : 
+                                                    u.role === 'lider' ? 'bg-blue-200 text-blue-800' : 
                                                     'bg-blue-100 text-blue-800'
                                                 }`}>
                                                     {u.role.toUpperCase()}
@@ -182,8 +181,8 @@ export default function DashboardContent() {
                                                     value={u.role}
                                                     onChange={(e) => handleRoleChange(u.uid, e.target.value)}
                                                     className={`mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm text-xs sm:text-sm 
-                                                        focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                        ${u.role === 'admin' ? 'bg-red-100/50 border-red-500' : u.role === 'lider' ? 'bg-indigo-100/50 border-indigo-500' : ''}`
+                                                        focus:outline-none focus:ring-theme-primary focus:border-theme-primary transition duration-150
+                                                        ${u.role === 'admin' ? 'bg-red-100/50 border-red-500' : u.role === 'lider' ? 'bg-blue-100/50 border-blue-500' : ''}`
                                                     }
                                                 >
                                                     {ROLES.map((r) => (
@@ -203,15 +202,15 @@ export default function DashboardContent() {
                 </div>
             ) : isLider ? ( 
                 // Conținut pentru Lideri - Temă Indigo
-                <div className="bg-white shadow-2xl overflow-hidden rounded-xl p-4 sm:p-6 border-t-8 border-indigo-500">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Panoul de Control al Echipei</h2>
-                    <p className="text-gray-600 text-sm sm:text-base">Aici vei vedea informații relevante despre grupul tău de adolescenți și vei putea gestiona evenimentele viitoare. Liderii pot vedea și modifica doar evenimentele proprii.</p>
+                <div className="bg-white shadow-2xl overflow-hidden rounded-xl p-4 sm:p-6 border-t-8 border-theme-primary">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4">Panoul de Control al Echipei</h2>
+                    <p className="text-sm sm:text-base">Aici vei vedea informații relevante despre grupul tău de adolescenți și vei putea gestiona evenimentele viitoare. Liderii pot vedea și modifica doar evenimentele proprii.</p>
                 </div>
             ) : (
                 // Conținut pentru Adolescenți (dacă ajung accidental aici)
-                <div className="bg-white shadow-2xl overflow-hidden rounded-xl p-4 sm:p-6 border-t-8 border-blue-500">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Bun venit în comunitate!</h2>
-                    <p className="text-gray-600 text-sm sm:text-base">Acest spațiu este rezervat pentru resursele și activitățile tale. Vizitează calendarul pentru a vedea evenimentele disponibile.</p>
+                <div className="bg-white shadow-2xl overflow-hidden rounded-xl p-4 sm:p-6 border-t-8 border-theme-primary">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4">Bun venit în comunitate!</h2>
+                    <p className="text-sm sm:text-base">Acest spațiu este rezervat pentru resursele și activitățile tale. Vizitează calendarul pentru a vedea evenimentele disponibile.</p>
                 </div>
             )}
         </div>

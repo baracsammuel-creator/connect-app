@@ -77,21 +77,21 @@ export default function EventFormModal({ selectedDate, eventToEdit, onClose, onS
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
                 
-                <h2 className="text-2xl font-bold mb-4 text-indigo-600">{isEditing ? 'Modifică Eveniment' : 'Creare Eveniment Nou'}</h2>
+                <h2 className="text-2xl font-bold mb-4 text-theme-primary-dark">{isEditing ? 'Modifică Eveniment' : 'Creare Eveniment Nou'}</h2>
                 <p className="mb-4 text-gray-700">Data evenimentului: <span className="font-semibold">{displayDate}</span></p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Titlu</label>
-                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" required />
+                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary text-gray-900" required />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Oră</label>
-                        <input type="time" value={eventTime} onChange={(e) => setEventTime(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" required />
+                        <input type="time" value={eventTime} onChange={(e) => setEventTime(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary text-gray-900" required />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Descriere (Opțional)</label>
-                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" />
+                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary text-gray-900" />
                     </div>
 
                     {error && <p className="text-red-500 text-sm p-2 bg-red-50 rounded-md border border-red-200">{error}</p>}
@@ -103,7 +103,7 @@ export default function EventFormModal({ selectedDate, eventToEdit, onClose, onS
                             </button>
                         )}
                         <div className={`flex space-x-3 ${!isEditing || !canDelete ? 'w-full justify-end' : 'ml-auto'}`}>
-                            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition shadow-md">
+                            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-theme-primary rounded-lg hover:bg-theme-primary-dark transition shadow-md">
                                 {isEditing ? 'Salvează Modificările' : 'Salvează Eveniment'}
                             </button>
                         </div>
