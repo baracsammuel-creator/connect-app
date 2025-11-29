@@ -1,11 +1,14 @@
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  // disable: process.env.NODE_ENV === 'development', // Dezactivează PWA în development
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Această linie îi spune lui Next.js să genereze un export static
-  // care va crea folderul `out`.
-  output: 'export',
-
-  // Decomentează și configurează dacă site-ul tău va fi într-un subdirector (ex: user.github.io/repo-name)
-  // basePath: '/song-creation',
+  // Aici poți adăuga alte configurații Next.js dacă ai nevoie
+  // reactStrictMode: true,
 };
 
-module.exports = nextConfig;
+module.exports = withPWA(nextConfig);
