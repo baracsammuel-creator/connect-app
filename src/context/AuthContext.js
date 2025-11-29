@@ -1,26 +1,29 @@
 // src/context/AuthContext.js
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
     onAuthStateChanged, 
-    signInAnonymously,
-    signOut
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword,
+    updateProfile,
+    signOut // Păstrăm signOut pentru o eventuală funcție de logout
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import Login from '@/components/Login'; // Importăm componenta de Login
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 // AVERTISMENT DE SECURITATE: Această parolă este aceeași pentru toți utilizatorii.
-// A se folosi DOAR pentru aplicații interne, unde securitatea conturilor individuale nu este o prioritate.
+// A se folosi DOAR pentru aplicații interne, unde securitatea conturilor nu este o prioritate.
+const GENERIC_PASSWORD = "connect-12345";
 
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [role, setRole] = useState('adolescent'); 
     const [loading, setLoading] = useState(true);
-    const isInitializing = useRef(false); // Previne rulări multiple
 
     // Funcție pentru a actualiza rolul din token claims
     const updateRoleFromToken = useCallback(async (currentUser) => {
@@ -37,12 +40,45 @@ export const AuthContextProvider = ({ children }) => {
             setRole(newRole);
         } catch (error) {
             if (error.code === 'auth/id-token-revoked') {
-                console.warn("Sesiunea a fost revocată. Se va încerca re-autentificarea la reîncărcare.");
+                console.warn("Sesiunea a fost revocată. Utilizatorul va fi delogat.");
                 // Forțăm delogarea pentru a declanșa logica de re-autentificare din useEffect
                 await signOut(auth);
             } else {
                 console.error('Error updating role from token:', error);
                 setRole('adolescent');
+            }
+        }
+    }, []);
+
+    // NOU: Funcția de login cu pseudo-email
+    const loginWithName = useCallback(async (name) => {
+        // 1. Sanitizează numele pentru a crea un email valid (fără diacritice, spații înlocuite cu punct)
+        const sanitizedName = name.trim().toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // elimină diacriticele
+            .replace(/\s+/g, '.');
+        const email = `${sanitizedName}@connect.ro`;
+
+        try {
+            // 2. Încearcă să te loghezi
+            await signInWithEmailAndPassword(auth, email, GENERIC_PASSWORD);
+            console.log(`Utilizator existent logat: ${email}`);
+        } catch (error) {
+            // 3. Dacă utilizatorul nu există, creează-l
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                console.log(`Utilizatorul ${email} nu există. Se creează un cont nou...`);
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, GENERIC_PASSWORD);
+                    // Setează numele de afișaj (displayName) pentru noul utilizator
+                    await updateProfile(userCredential.user, { displayName: name.trim() });
+                    console.log(`Cont nou creat și logat pentru: ${email}`);
+                } catch (creationError) {
+                    console.error("Eroare la crearea contului:", creationError);
+                    throw new Error("Nu s-a putut crea contul. Încearcă un alt nume.");
+                }
+            } else {
+                // Alte erori de login
+                console.error("Eroare la autentificare:", error);
+                throw new Error("A apărut o eroare la autentificare.");
             }
         }
     }, []);
@@ -53,30 +89,15 @@ export const AuthContextProvider = ({ children }) => {
         }
     }, [updateRoleFromToken]);
 
-
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setLoading(true);
             if (currentUser) {
-                // Utilizator logat, salvăm UID-ul
-                localStorage.setItem('persistentUid', currentUser.uid);
                 setUser(currentUser);
                 await updateRoleFromToken(currentUser);
-                isInitializing.current = false;
             } else {
-                // Niciun utilizator activ. Aici intervine logica de persistență.
-                if (!isInitializing.current) {
-                    isInitializing.current = true;
-                    console.log("Niciun utilizator activ. Se inițiază autentificarea anonimă...");
-                    try {
-                        await signInAnonymously(auth);
-                        // onAuthStateChanged se va rula din nou, de data asta cu un utilizator,
-                        // și va intra pe ramura `if (currentUser)` de mai sus.
-                    } catch (error) {
-                        console.error("Eroare la signInAnonymously:", error);
-                        isInitializing.current = false;
-                    }
-                }
+                // Utilizatorul este delogat, resetează starea
+                setUser(null);
+                setRole('adolescent');
             }
             setLoading(false);
         });
@@ -93,15 +114,21 @@ export const AuthContextProvider = ({ children }) => {
             unsubscribe();
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [updateRoleFromToken, refreshRole]);
+    }, [updateRoleFromToken, refreshRole]); // Am scos loginWithName de aici
 
     // Afișează un ecran de încărcare global
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen bg-gray-100 text-theme-primary">Se încarcă...</div>;
     }
 
+    // Dacă nu e loading și nu există user, afișează pagina de Login
+    if (!user) {
+        // Furnizăm funcția de login componentei Login
+        return <AuthContext.Provider value={{ user, loading, role, loginWithName, refreshRole }}><Login /></AuthContext.Provider>;
+    }
+
     return (
-        <AuthContext.Provider value={{ user, loading, role, refreshRole }}> 
+        <AuthContext.Provider value={{ user, loading, role, loginWithName, refreshRole }}> 
             {children}
         </AuthContext.Provider>
     );
