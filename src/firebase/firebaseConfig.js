@@ -3,13 +3,6 @@ import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, 
 // Am adăugat 'updateDoc' și 'deleteDoc' în importul din 'firebase/firestore'
 import { getFirestore, collection, doc, query, where, getDocs, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
-// --- Variabile Globale Canvas (MANDATORII) ---
-// appId este folosit pentru a construi calea către colecțiile specifice Canvas.
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-// Configurația Canvas (prioritară dacă este disponibilă)
-const canvasConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
 // --- Variabile Next.js (Logica Cerută de Utilizator) ---
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '';
 const AUTH_DOMAIN = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '';
@@ -19,8 +12,7 @@ const MESSAGING_SENDER_ID = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
 const APP_ID_CONFIG = process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '';
 
 // --- Construirea Obiectului de Configurare ---
-// Prioritizăm configurația Canvas dacă este injectată.
-const firebaseConfig = canvasConfig && canvasConfig.apiKey ? canvasConfig : {
+const firebaseConfig = {
     apiKey: API_KEY,
     authDomain: AUTH_DOMAIN,
     projectId: PROJECT_ID,
@@ -62,7 +54,7 @@ if (dbInitialized) {
 // Funcție pentru a obține calea către colecția publică de evenimente
 export const getEventsCollectionPath = () => {
     // Evenimentele sunt date publice, vizibile tuturor utilizatorilor aplicației
-    return `artifacts/${appId}/public/data/events`;
+    return `artifacts/${APP_ID_CONFIG}/public/data/events`;
 };
 
 // Obține referința la colecția de evenimente (doar dacă DB e inițializat)
@@ -88,11 +80,8 @@ export const initializeAuth = async () => {
         resolve(user.uid);
       } else {
         try {
-          if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-          } else {
-            await signInAnonymously(auth);
-          }
+          // Ne autentificăm anonim dacă nu există utilizator
+          await signInAnonymously(auth);
           console.log("Autentificare nouă reușită. User ID:", auth.currentUser.uid);
           resolve(auth.currentUser.uid);
         } catch (error) {
